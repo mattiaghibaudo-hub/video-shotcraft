@@ -1,0 +1,151 @@
+{
+  "title": "Red Bucket Boy — La Reliquia",
+  "format": { "width": 1080, "height": 1920, "fps": 24, "aspect_ratio": "9:16" },
+  "total_seconds": 57,
+
+  "style_lock": "adult animated sci-fi comedy cartoon, thin uniform black outlines, flat cel colors, minimal shading, no texture, no grain, wobbly organic linework, exaggerated proportions, large round eyes with small pupils, droopy eyelids, satirical deadpan comedic tone. Palette: red, teal, purple, sand, off-white; every alien element is acid green. Vertical 9:16 composition.",
+
+  "negative": "photorealistic, 3D render, painterly texture, film grain, crosshatching, extra characters, extra limbs, text, letters, watermark, logo, subtitles, lens flare, changing outfit colors",
+
+  "characters": {
+    "red_bucket_boy": {
+      "lock": "RED BUCKET BOY: lanky young man in his early 20s, slightly hunched, messy dark hair under a bright red oversized bucket hat with frayed brim and a thin chin drawstring; unzipped retro teal jacket with a wide purple chevron band across the chest, purple collar and cuffs; oversized faded off-white graphic tee; sand-beige baggy cargo pants with big side pockets; chunky brown hiking boots with NEON GREEN laces (both feet, always green); small grey crossbody bag on a black strap; silver carabiner on the belt loop; dark fingerless gloves; large round eyes with tiny pupils and heavy droopy eyelids; deadpan dry half-smile with mouth closed.",
+      "reference_sheet": "characters/red-bucket-boy_sheet_v1.jpg",
+      "known_sheet_issues": [
+        "textured/painterly rendering instead of flat cel (does not match Paco's sheet or the style lock)",
+        "FRONT and 3/4 views show an open toothy grin instead of the deadpan half-smile",
+        "laces turn pink/magenta in the BACK view",
+        "no hatless reference (needed for shot 9)"
+      ]
+    },
+    "paco": {
+      "lock": "PACO: chunky black Labrador retriever, floppy ears, goofy wide white eyes with small black pupils, pink tongue out, clear white patch on the chest, small red bandana knotted around the neck.",
+      "reference_sheet": "characters/paco_sheet_v1.jpg",
+      "known_sheet_issues": [
+        "no 3/4 view and no action poses (needed for shots 5 and 7)",
+        "anatomical details visible in FRONT/BACK: remove for a social cut"
+      ]
+    }
+  },
+
+  "sheet_fixes": [
+    {
+      "id": "fix_rbb_flat",
+      "out": "characters/red-bucket-boy_sheet_v2.png",
+      "refs": ["characters/red-bucket-boy_sheet_v1.jpg", "characters/paco_sheet_v1.jpg"],
+      "prompt": "Redraw this character turnaround (FRONT, 3/4 FRONT, SIDE, BACK) in exactly the rendering style of the dog sheet: flat cel colors, thin uniform black outlines, minimal shading, no texture or grain. Keep every costume detail identical. Expression in all views: deadpan dry half-smile, mouth closed, heavy droopy eyelids. Neon green laces in every view, including BACK. Off-white background, labels above each view."
+    },
+    {
+      "id": "fix_rbb_hatless",
+      "out": "characters/red-bucket-boy_hatless.png",
+      "refs": ["characters/red-bucket-boy_sheet_v2.png"],
+      "prompt": "Same character, NO HAT: head and shoulders, FRONT and 3/4 views side by side. Messy dark hair flattened and dented in a ring where the bucket hat used to sit, a few strands sticking up. Confused expression: eyebrows raised, tiny pupils, mouth slightly open. Flat cel style, off-white background."
+    },
+    {
+      "id": "fix_rbb_expressions",
+      "out": "characters/red-bucket-boy_expressions.png",
+      "refs": ["characters/red-bucket-boy_sheet_v2.png"],
+      "prompt": "Expression sheet of the same character, head and shoulders with hat, 2x2 grid: deadpan half-smile, bored (half-closed eyes, flat mouth), focused on phone (looking down, lit from below), confused. Flat cel style, off-white background, no text."
+    },
+    {
+      "id": "fix_paco_poses",
+      "out": "characters/paco_poses.png",
+      "refs": ["characters/paco_sheet_v1.jpg"],
+      "prompt": "Pose sheet of this exact dog, 3 poses side by side: 3/4 FRONT standing happy with tongue out; sitting and barking urgently straight up at the sky, mouth wide open; mid-air leap with jaws closed gently on something. White chest patch and small red bandana visible in every pose. No genitals. Flat cel style, thin black outlines, off-white background, no text."
+    },
+    {
+      "id": "fix_lineup",
+      "out": "characters/lineup.png",
+      "refs": ["characters/red-bucket-boy_sheet_v2.png", "characters/paco_sheet_v1.jpg"],
+      "prompt": "Scale lineup: the young man and the dog standing side by side, full body, front view, same ground line. The dog's back reaches just above the man's knee. Flat cel style, off-white background, faint horizontal height guides, no text."
+    }
+  ],
+
+  "shots": [
+    {
+      "id": "01", "start": 0, "end": 3, "gen_duration": 4,
+      "refs": ["characters/red-bucket-boy_sheet_v2.png", "characters/paco_poses.png"],
+      "keyframe_prompt": "Night. Static low-angle shot looking up. RED BUCKET BOY floats upward inside a narrow acid-green alien tractor beam high above a snowy mountain summit, gripping the brim of his bucket hat with both hands, bored deadpan face, legs dangling. PACO floats beside him inside the beam, happily wagging, tongue out. Starry deep-purple sky, snowy peak far below.",
+      "video_prompt": "Static camera, low angle. Both characters drift slowly upward inside the green beam. The young man stays deadpan and bored, he blinks once, slowly. The dog wags its tail and paddles its legs happily. Beam shimmers softly. No camera movement.",
+      "audio": { "vo": "01" }
+    },
+    {
+      "id": "02", "start": 3, "end": 5, "local": "titlecard",
+      "text": "20 MINUTI PRIMA", "bg": "#D7261E", "fg": "#F6F1E7"
+    },
+    {
+      "id": "03", "start": 5, "end": 13, "gen_duration": 8,
+      "refs": ["characters/red-bucket-boy_sheet_v2.png", "characters/paco_poses.png", "characters/lineup.png"],
+      "keyframe_prompt": "Daytime rocky high-altitude trail, snowy peaks, clear sky. Foreground right, seen from behind: an influencer man in flip-flops and shorts holding a selfie stick with a ring light, filming himself. Midground left: RED BUCKET BOY and PACO walking on the trail, unimpressed.",
+      "video_prompt": "Tracking shot moving left to right along the trail. The influencer in the foreground, back to camera, gestures enthusiastically at his ring-light phone. Behind him the young man and the dog hike past at a steady pace, both glancing at the influencer with flat unimpressed expressions, then looking ahead. Nobody's face toward camera speaks.",
+      "audio": { "vo": "03" }
+    },
+    {
+      "id": "04", "start": 13, "end": 21, "gen_duration": 8,
+      "refs": ["characters/red-bucket-boy_sheet_v2.png", "characters/paco_poses.png"],
+      "keyframe_prompt": "Mountain summit, clear sky. Over-the-shoulder shot from behind RED BUCKET BOY: he holds his phone up for a selfie, his own face and red bucket hat visible on the phone screen, colorful beauty filters on screen. PACO sits beside him. Wind lifts the frayed hat brim.",
+      "video_prompt": "Over-the-shoulder, nearly static. On the phone screen the filters switch rapidly every half second: rainbow sparkles, puppy ears, glitter, sepia. The hat brim flutters in the wind. The dog sits, panting, looks up at the sky once.",
+      "optional_fix": "Last filter on screen: an acid-green 'aura glow' that makes the red bucket hat shine like a beacon; a faint green glint pulses off the real hat.",
+      "audio": { "vo": "04" }
+    },
+    {
+      "id": "05", "start": 21, "end": 27, "gen_duration": 6,
+      "refs": ["characters/paco_poses.png", "characters/red-bucket-boy_sheet_v2.png"],
+      "keyframe_prompt": "Close-up of PACO, low angle, barking urgently up at the sky, mouth wide open, ears flapping. Background, out of focus and blurred: RED BUCKET BOY staring down at his phone, face lit by the screen.",
+      "video_prompt": "Close-up, static. The dog barks repeatedly and urgently at the sky, head jerking with each bark. In the blurred background the young man does not look up from his phone.",
+      "audio": { "vo": "05" }
+    },
+    {
+      "id": "06", "start": 27, "end": 34, "gen_duration": 7,
+      "refs": [],
+      "keyframe_prompt": "Wide shot of the snowy summit. A glowing acid-green rift tears the sky open. A clunky, lumpy, asymmetrical alien spaceship with mismatched lights emerges. Far below, three tiny hikers stand on the ridge holding their phones up to film it.",
+      "video_prompt": "Slow push-in. The green rift widens with crackling edges, the lumpy spaceship descends wobbling, its mismatched lights blinking out of sync. The three tiny hikers raise their phones higher, nobody runs.",
+      "optional_fix": "The ship turns slightly as if homing in on a small green glint on the summit.",
+      "audio": {}
+    },
+    {
+      "id": "07", "start": 34, "end": 42, "gen_duration": 8,
+      "refs": ["characters/red-bucket-boy_sheet_v2.png", "characters/paco_poses.png", "characters/lineup.png"],
+      "keyframe_prompt": "Low angle. A narrow acid-green tractor beam locks precisely onto the red bucket hat on RED BUCKET BOY's head. He grips the hat with both hands, heels just leaving the ground. PACO crouches below, about to leap.",
+      "video_prompt": "Low angle, camera tilts upward following the motion. The beam pulls the hat up; the young man refuses to let go and is lifted off the ground, legs dangling, deadpan. His phone slips from his hand and falls out of frame. The dog leaps and bites his boot ankle, and is lifted along, dangling and wagging.",
+      "audio": {}
+    },
+    {
+      "id": "08", "start": 42, "end": 48, "gen_duration": 6,
+      "refs": [],
+      "keyframe_prompt": "Static close-up from above: a smartphone lying face up on a grey rock, screen glowing, showing a selfie of a young man in a red bucket hat and a black dog. Green and mismatched spaceship lights reflected on the glass.",
+      "video_prompt": "Static close-up. On the screen an upload progress bar fills and the selfie posts itself, likes start popping up. Reflections of the departing spaceship lights slide across the glass and fade.",
+      "audio": {}
+    },
+    {
+      "id": "09a", "start": 48, "end": 53.5, "gen_duration": 6,
+      "refs": ["characters/red-bucket-boy_hatless.png", "characters/paco_poses.png"],
+      "keyframe_prompt": "Dark temple-like spaceship interior, organic arches, acid-green accents. Center: the red bucket hat glowing on a stone pedestal under a spotlight. Hundreds of strange diverse aliens kneel and bow toward it in rows. Far background: RED BUCKET BOY, hatless, hair dented, confused, standing next to PACO.",
+      "video_prompt": "Slow reveal pan. Lights switch on one by one along the hall, revealing more and more rows of bowing aliens. The aliens bow in unison. Hold on the glowing hat.",
+      "audio": { "vo": "09a" }
+    },
+    {
+      "id": "09b", "start": 53.5, "end": 57, "gen_duration": 4,
+      "refs": ["characters/red-bucket-boy_hatless.png", "characters/paco_poses.png"],
+      "keyframe_prompt": "Medium shot of RED BUCKET BOY, hatless, messy dented hair, confused expression, standing next to PACO in the dark green-lit temple; rows of bowing aliens blurred in the foreground.",
+      "video_prompt": "Static. He looks at the aliens, then at the camera, blinks slowly, mouth closed. The dog tilts its head. Hold.",
+      "audio": { "vo": "09b" }
+    }
+  ],
+
+  "vo": [
+    { "id": "01",  "at": 0.3,  "speaker": "Red Bucket Boy (VO)", "text": "Ok. Tecnicamente è colpa del selfie.", "direction": "flat, bored, dry, slightly nasal, young adult male, Italian" },
+    { "id": "03",  "at": 7.0,  "speaker": "Influencer", "text": "Giornata autentica in alta quota, ragazzi.", "direction": "over-enthusiastic vlogger voice, a bit breathless, Italian" },
+    { "id": "04",  "at": 16.0, "speaker": "Red Bucket Boy (VO)", "text": "Contenuto autentico. Zero filtri.", "direction": "deadpan, ironic, Italian" },
+    { "id": "05",  "at": 22.8, "speaker": "Red Bucket Boy", "text": "Paco, non adesso. Sto lavorando.", "direction": "distracted, mumbled, not looking up, Italian" },
+    { "id": "09a", "at": 51.2, "speaker": "Alien", "text": "La Reliquia. Finalmente.", "direction": "deep, reverent, slightly wet alien voice, slow, Italian" },
+    { "id": "09b", "at": 54.0, "speaker": "Red Bucket Boy (off-screen)", "text": "...l'ho pagato 8 euro al mercato.", "direction": "small, confused, deadpan, Italian" }
+  ],
+
+  "music": {
+    "file": "audio/music.mp3",
+    "prompt": "lo-fi Y2K beat, 88 BPM, dusty drums, warm detuned synth pads, playful bleeps, slightly ironic mood, instrumental, no vocals",
+    "cut_at": 48.0,
+    "volume": 0.35
+  }
+}
