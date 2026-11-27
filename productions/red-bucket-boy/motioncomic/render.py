@@ -1149,11 +1149,17 @@ def main():
         make_vo(spec)
         make_music(spec["music"]["cut_at"] + 0.5)
     out = BUILD / "red-bucket-boy_ep01_motioncomic.mp4"
+    master = BUILD / "master.mp4"
     cmd = [sys.executable, str(ROOT / "assemble.py"), "--clips-dir", str(CLIPS), "--vo-dir", str(VO),
-           "--music", str(MUSIC), "--out", str(out)]
+           "--music", str(MUSIC), "--out", str(master)]
     if not args.no_subs:
         cmd.append("--subs")
     subprocess.run(cmd, check=True)
+    # la grana per-frame gonfia il bitrate: versione di consegna a ~6 Mbit/s (adatta a TikTok/Reels/Shorts)
+    subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", str(master), "-c:v", "libx264", "-preset", "slow",
+                    "-crf", "21", "-maxrate", "6M", "-bufsize", "12M", "-pix_fmt", "yuv420p", "-c:a", "copy",
+                    "-movflags", "+faststart", str(out)], check=True)
+    print(f"-> {out.relative_to(ROOT)} ({out.stat().st_size / 1e6:.1f} MB)")
 
 
 if __name__ == "__main__":
