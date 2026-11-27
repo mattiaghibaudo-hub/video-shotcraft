@@ -1,3 +1,7 @@
 build/tmp/
 build/*.mp4
 !build/animatic.mp4
+motioncomic/cutouts/
+motioncomic/voices/
+motioncomic/build/*
+!motioncomic/build/red-bucket-boy_ep01_motioncomic.mp4
