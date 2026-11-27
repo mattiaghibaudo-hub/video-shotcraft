@@ -2,8 +2,10 @@
 
 Short animato verticale 9:16, 57 s, 9 shot (lo shot 9 è diviso in 09a + 09b).
 
-**Stato:** pacchetto di produzione pronto, nessun clip generato. L'account
-Higgsfield ha 0 crediti.
+**Stato:** pacchetto di produzione pronto. In più c'è una **versione motion comic
+completa, fatta senza crediti AI**: [`motioncomic/`](motioncomic/README.md) →
+`motioncomic/build/red-bucket-boy_ep01_motioncomic.mp4`. Nessun clip generato con l'AI.
+Nuova scheda di Paco: `characters/paco_sheet_v2.jpg` (3D materico, come il ragazzo).
 
 | File | Cosa contiene |
 |---|---|

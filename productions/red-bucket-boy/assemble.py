@@ -130,9 +130,10 @@ def find_audio(base):
     return None
 
 
-def build_audio(spec, total, out):
+def build_audio(spec, total, out, music=None, vo_dir=None):
     inputs, chains, labels = [], [], []
-    music = ROOT / spec["music"]["file"]
+    music = Path(music) if music else ROOT / spec["music"]["file"]
+    vo_dir = Path(vo_dir) if vo_dir else ROOT / "audio" / "vo"
     if music.exists():
         cut = spec["music"]["cut_at"]
         inputs += ["-i", str(music)]
@@ -141,7 +142,7 @@ def build_audio(spec, total, out):
         chains.append(f"[{n}:a]atrim=0:{cut},asetpts=N/SR/TB,volume={spec['music']['volume']},afade=t=out:st={cut-0.005}:d=0.005[m]")
         labels.append("[m]")
     for v in spec["vo"]:
-        f = find_audio(ROOT / "audio" / "vo" / v["id"])
+        f = find_audio(vo_dir / v["id"])
         if not f:
             continue
         inputs += ["-i", str(f)]
@@ -177,6 +178,9 @@ def main():
     ap.add_argument("--font")
     ap.add_argument("--subs", action="store_true", help="brucia le battute come sottotitoli")
     ap.add_argument("--out", default=str(BUILD / "red-bucket-boy.mp4"))
+    ap.add_argument("--clips-dir", default=str(ROOT / "clips"), help="cartella dei clip shot<ID>.mp4")
+    ap.add_argument("--vo-dir", default=str(ROOT / "audio" / "vo"), help="cartella delle voci <id>.wav|mp3")
+    ap.add_argument("--music", help="file musica (default: music.file di shots.json)")
     args = ap.parse_args()
 
     if not shutil.which("ffmpeg"):
@@ -190,7 +194,7 @@ def main():
     for idx, shot in enumerate(spec["shots"]):
         dur = round(shot["end"] - shot["start"], 3)
         out = TMP / f"seg_{shot['id']}.mp4"
-        clip = ROOT / "clips" / f"shot{shot['id']}.mp4"
+        clip = Path(args.clips_dir) / f"shot{shot['id']}.mp4"
         key = ROOT / "keyframes" / f"shot{shot['id']}.png"
         if shot.get("local") == "titlecard":
             seg_titlecard(shot, dur, cfg, font, out); src = "title card (locale)"
@@ -211,7 +215,7 @@ def main():
 
     total = spec["total_seconds"]
     audio = TMP / "audio.m4a"
-    has_audio = build_audio(spec, total, audio)
+    has_audio = build_audio(spec, total, audio, args.music, args.vo_dir)
 
     final = Path(args.out)
     final.parent.mkdir(parents=True, exist_ok=True)
