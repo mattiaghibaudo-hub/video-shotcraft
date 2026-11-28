@@ -1,7 +1,11 @@
 # Montaggio verticale delle clip Gemini (Veo)
 
-Cinque clip 16:9 da 10 s (`clips/clip01-05.mp4`, in ordine di racconto), montate in un
-video 9:16 da 50 s con sottotitoli in italiano.
+Sei clip 16:9 da 10 s (`clips/clip01-06.mp4`, in ordine di racconto), montate in verticale 9:16.
+
+| Uscita | Cosa è |
+|---|---|
+| `build/red-buket_ep01_verticale.mp4` | Clip 1-5, 50 s, sottotitoli |
+| `build/red-buket_ep01_tiktok.mp4` | Clip 1-6, 56 s, versione TikTok: sottotitoli nella zona sicura dell'app, primi 3 s della salita tagliati, gancio "PARTE 1 · RAPITI DAGLI ALIENI", invito finale "SEGUI PER LA PARTE 2" |
 
 | Clip | Contenuto | Battute |
 |---|---|---|
@@ -10,6 +14,7 @@ video 9:16 da 50 s con sottotitoli in italiano.
 | 03 | Interno dell'astronave, ologrammi | "Dove siamo finiti, Paco? … c'è persino GTA 6!" |
 | 04 | Console, finestra sulla Terra | "Guarda quante luci, Paco … Guarda la Terra com'è bella!" |
 | 05 | Lo "spazio" era uno schermo, città futuristica | "Ma allora era solo una televisione? … Siamo in un mondo futuristico!" |
+| 06 | Arriva il robot | "Ciao a tutti, sono Lisebot (?) … vi aiuterò io a tornare a casa." |
 
 ## Uso
 
@@ -21,6 +26,14 @@ python3 vertical_edit.py clips/clip0*.mp4 -o build/red-buket_ep01_verticale.mp4 
 - Senza `--words` trascrive di nuovo con faster-whisper (`--model medium`).
 - `--fix "vecchio=nuovo"` corregge il testo dei sottotitoli.
 - `--no-subs` monta senza sottotitoli.
+
+Versione TikTok:
+
+```bash
+python3 vertical_edit.py clips/clip0*.mp4 -o build/red-buket_ep01_tiktok.mp4 --words clips/words.json \
+  --tiktok --trim 1=3.0:10.1 --trim 5=0:9.0 --fix "Bucket=Buket" \
+  --badge "PARTE 1" --hook 'RAPITI DAGLI\NALIENI' --cta 'SEGUI PER LA\NPARTE 2'
+```
 
 ## Cosa fa lo script
 

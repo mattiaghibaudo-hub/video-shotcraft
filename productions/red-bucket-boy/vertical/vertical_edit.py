@@ -14,6 +14,10 @@ Uso:
   pip install rembg onnxruntime faster-whisper pillow numpy scipy
   python3 vertical_edit.py clip1.mp4 clip2.mp4 ... -o episodio.mp4
   python3 vertical_edit.py clips/*.mp4 -o ep.mp4 --fix "come è bella=com'è bella"   # correzioni al testo
+
+Versione TikTok (sottotitoli nella zona sicura dell'app, tagli, gancio e invito finale):
+  python3 vertical_edit.py clips/*.mp4 -o tiktok.mp4 --tiktok --trim 1=3.0:10 \
+      --badge "PARTE 1" --hook "RAPITI DAGLI ALIENI" --cta "SEGUI PER LA PARTE 2"
 """
 import argparse
 import json
@@ -164,21 +168,31 @@ def ass_time(t):
     return f"{int(t // 3600)}:{int(t % 3600 // 60):02d}:{t % 60:05.2f}"
 
 
-def write_ass(all_words, offsets, path, fixes):
+def write_ass(all_words, offsets, path, fixes, tiktok=False, hook=None, badge=None, cta=None, total=0.0):
+    # TikTok: la parte bassa (descrizione, musica) e la colonna destra (like, commenti) sono coperte dall'app
+    mv, ml, mr = (int(H * 0.31), 90, 170) if tiktok else (int(H * 0.2), 70, 70)
     head = f"""[Script Info]
 ScriptType: v4.00+
 PlayResX: {W}
 PlayResY: {H}
-WrapStyle: 2
+WrapStyle: 0
 
 [V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
-Style: Cap,{FONT},84,&H00FFFFFF,&H00FFFFFF,&H00000000,&H96000000,1,0,0,0,100,100,0,0,1,7,3,2,70,70,{int(H * 0.2)},1
+Style: Cap,{FONT},84,&H00FFFFFF,&H00FFFFFF,&H00000000,&H96000000,1,0,0,0,100,100,0,0,1,7,3,2,{ml},{mr},{mv},1
+Style: Hook,{FONT},80,&H00FFFFFF,&H00FFFFFF,&H001E26D7,&H001E26D7,1,0,0,0,100,100,0,0,3,18,0,8,90,170,225,1
+Style: Badge,{FONT},50,&H00111111,&H00111111,&H002EE8FF,&H002EE8FF,1,0,0,0,100,100,2,0,3,12,0,8,90,170,150,1
 
 [Events]
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
 """
     lines = []
+    if badge:
+        lines.append(f"Dialogue: 1,{ass_time(0)},{ass_time(2.8)},Badge,,0,0,0,,{{\\fad(0,250)}}{badge}")
+    if hook:
+        lines.append(f"Dialogue: 1,{ass_time(0)},{ass_time(2.8)},Hook,,0,0,0,,{{\\fscx115\\fscy115\\t(0,160,\\fscx100\\fscy100)\\fad(0,250)}}{hook}")
+    if cta:
+        lines.append(f"Dialogue: 1,{ass_time(total - 2.4)},{ass_time(total)},Hook,,0,0,0,,{{\\fad(200,0)}}{cta}")
     for words, off in zip(all_words, offsets):
         words = merge_elisions([(s, e, w.strip()) for s, e, w in words if w.strip()])
         groups = list(chunks(words))
@@ -212,13 +226,24 @@ def main():
     ap.add_argument("--fix", action="append", default=[], help='correzione al testo, es. "come è=com\'è"')
     ap.add_argument("--words", help="json di parole già trascritte (salta whisper)")
     ap.add_argument("--no-subs", action="store_true")
+    ap.add_argument("--tiktok", action="store_true", help="sottotitoli e testi nella zona sicura di TikTok")
+    ap.add_argument("--trim", action="append", default=[], help="taglio di una clip: N=inizio:fine in secondi (N da 1)")
+    ap.add_argument("--hook", help="titolo a schermo nei primi 2,8 s")
+    ap.add_argument("--badge", help="etichetta sopra il titolo (es. PARTE 1)")
+    ap.add_argument("--cta", help="invito negli ultimi 2,4 s (es. SEGUI PER LA PARTE 2)")
     args = ap.parse_args()
     fixes = [tuple(f.split("=", 1)) for f in args.fix]
 
     tmp = Path(tempfile.mkdtemp(prefix="vert_"))
     info = [probe(c) for c in args.clips]
-    offsets = list(np.cumsum([0] + [d for _, _, d in info[:-1]]))
-    total = sum(d for _, _, d in info)
+    cuts = [(0.0, d) for _, _, d in info]
+    for t in args.trim:
+        n, rng = t.split("=")
+        a, b = rng.split(":")
+        cuts[int(n) - 1] = (float(a or 0), min(float(b or 1e9), info[int(n) - 1][2]))
+    durs = [b - a for a, b in cuts]
+    offsets = list(np.cumsum([0] + durs[:-1]))
+    total = sum(durs)
 
     print("audio ...")
     wavs = []
@@ -228,9 +253,10 @@ def main():
         wavs.append(p)
     parts = []
     for i, c in enumerate(args.clips):
-        d = info[i][2]
+        d = durs[i]
         p = tmp / f"m{i}.wav"
-        subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", c, "-af", f"afade=t=in:d=0.03,afade=t=out:st={d - 0.04}:d=0.04",
+        subprocess.run(["ffmpeg", "-v", "error", "-y", "-ss", str(cuts[i][0]), "-t", str(d), "-i", c,
+                        "-af", f"afade=t=in:d=0.03,afade=t=out:st={d - 0.04}:d=0.04",
                         "-ar", "48000", "-ac", "2", str(p)], check=True)
         parts.append(p)
     concat = tmp / "a.txt"
@@ -245,8 +271,10 @@ def main():
         words = json.loads(Path(args.words).read_text()) if args.words else transcribe(wavs, args.model)
         if isinstance(words, dict):
             words = [words[k] for k in sorted(words, key=int)]
+        # solo le parole dentro il taglio, con i tempi spostati all'inizio del taglio
+        words = [[(s - a, e - a, w) for s, e, w in ws if s >= a - 0.05 and e <= b + 0.15] for ws, (a, b) in zip(words, cuts)]
         subs = tmp / "subs.ass"
-        n = write_ass(words, offsets, subs, fixes)
+        n = write_ass(words, offsets, subs, fixes, args.tiktok, args.hook, args.badge, args.cta, total)
         print(f"  {n} eventi di sottotitolo")
 
     print("inquadrature ...")
@@ -265,8 +293,9 @@ def main():
                              capture_output=True).stdout
         frames = np.frombuffer(raw, np.uint8).reshape(-1, sh, sw, 3)
         cen, wid = crop_path(pts, len(frames), sw, sh)
-        for k, f in enumerate(frames):
-            enc.stdin.write(compose(f, cen[k], wid[k], sw, sh).tobytes())
+        k0, k1 = int(round(cuts[i][0] * FPS)), min(len(frames), int(round(cuts[i][1] * FPS)))
+        for k in range(k0, k1):
+            enc.stdin.write(compose(frames[k], cen[k], wid[k], sw, sh).tobytes())
         print(f"  clip {i + 1}: {len(frames)} frame, larghezza ritaglio {wid.min():.0f}-{wid.max():.0f}px")
     enc.stdin.close()
     enc.wait()
